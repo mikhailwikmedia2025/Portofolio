@@ -1,10 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { Project, Product, ServiceInquiry } from './types';
 
-// NOTE: In a real Next.js app, these would be process.env.NEXT_PUBLIC_SUPABASE_URL
-// For this demo, we check if they exist, otherwise we fallback to Mock Mode.
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// NOTE: We use optional chaining to prevent crashes in environments where Vite hasn't injected the env object.
+// We cast import.meta to any to avoid TypeScript errors if vite/client types are missing.
+const env = (import.meta as any).env;
+
+const SUPABASE_URL = env?.VITE_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = env?.VITE_SUPABASE_ANON_KEY || '';
 
 export const isMockMode = !SUPABASE_URL || !SUPABASE_ANON_KEY;
 

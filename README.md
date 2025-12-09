@@ -105,8 +105,8 @@ create trigger on_auth_user_created
 Create a `.env` file (or configure your deployment settings) with:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
 
 If these are missing, the app runs in **Mock Mode**.
