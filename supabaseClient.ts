@@ -1,14 +1,29 @@
 import { createClient } from '@supabase/supabase-js';
 import { Project, Product, ServiceInquiry } from './types';
 
-// NOTE: We use optional chaining to prevent crashes in environments where Vite hasn't injected the env object.
-// We cast import.meta to any to avoid TypeScript errors if vite/client types are missing.
-const env = (import.meta as any).env;
+// Debugging: Check if environment variables are loaded
+// @ts-ignore
+const envUrl = import.meta.env.VITE_SUPABASE_URL;
+// @ts-ignore
+const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const SUPABASE_URL = env?.VITE_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = env?.VITE_SUPABASE_ANON_KEY || '';
+console.log('--- Supabase Initialization ---');
+console.log('VITE_SUPABASE_URL:', envUrl);
+console.log('VITE_SUPABASE_ANON_KEY:', envKey ? '*** (Present)' : 'Missing');
+
+// Strictly use import.meta.env.VITE_... without fallbacks to process.env
+// @ts-ignore
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+// @ts-ignore
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const isMockMode = !SUPABASE_URL || !SUPABASE_ANON_KEY;
+
+if (isMockMode) {
+  console.warn('Running in MOCK MODE. Environment variables are missing.');
+} else {
+  console.log('Running in PRODUCTION MODE. Connecting to Supabase...');
+}
 
 export const supabase = !isMockMode
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
