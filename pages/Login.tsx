@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, isMockMode } from '../supabaseClient';
+import { api } from '../supabaseClient';
 import { Button } from '../components/ui/Button';
 
 export const Login = () => {
-  const [email, setEmail] = useState(isMockMode ? 'admin@lumina.com' : '');
-  const [password, setPassword] = useState(isMockMode ? 'admin' : '');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -20,7 +20,8 @@ export const Login = () => {
       if (error) throw error;
       navigate('/admin');
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      console.error(err);
+      setError(err.message || 'Failed to login. Please check your internet connection and credentials.');
     } finally {
       setLoading(false);
     }
@@ -34,13 +35,6 @@ export const Login = () => {
           <p className="text-zinc-400 text-sm">Enter your credentials to manage your portfolio.</p>
         </div>
 
-        {isMockMode && (
-           <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs p-3 rounded-lg mb-6">
-             <strong>Mock Mode Active:</strong> No backend connected.<br/>
-             Use <code>admin@lumina.com</code> / <code>admin</code>
-           </div>
-        )}
-
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-400 mb-1">Email</label>
@@ -49,6 +43,8 @@ export const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-background border border-border rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-zinc-600 outline-none"
+              placeholder="you@example.com"
+              required
             />
           </div>
           <div>
@@ -58,10 +54,12 @@ export const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-background border border-border rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-zinc-600 outline-none"
+              placeholder="••••••••"
+              required
             />
           </div>
           
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20">{error}</p>}
           
           <Button type="submit" className="w-full" isLoading={loading}>
             Sign In

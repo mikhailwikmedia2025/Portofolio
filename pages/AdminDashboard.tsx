@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, MessageSquare, LogOut, Plus, Trash2, Edit2, ShoppingBag } from 'lucide-react';
-import { api, isMockMode } from '../supabaseClient';
+import { api } from '../supabaseClient';
 import { Project, Product, ServiceInquiry } from '../types';
 import { Button } from '../components/ui/Button';
 
