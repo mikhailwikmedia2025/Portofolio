@@ -370,7 +370,7 @@ const ProfileManager = () => {
             <form onSubmit={handleSave} className="space-y-6 bg-surface p-6 rounded-xl border border-border">
                 <ImageUpload 
                     bucket="avatars"
-                    label="Profile Picture"
+                    label="Main Photo (Hero Image)"
                     value={profile.avatar_url || ''}
                     onChange={(url) => setProfile({...profile, avatar_url: url})}
                     onUploadStart={() => setIsUploading(true)}
@@ -378,17 +378,17 @@ const ProfileManager = () => {
                 />
 
                 <div className="space-y-1">
-                    <label className="text-xs text-zinc-500">Display Name</label>
+                    <label className="text-xs text-zinc-500">Name (Large Title)</label>
                     <input 
                         value={profile.full_name || ''} 
                         onChange={e => setProfile({...profile, full_name: e.target.value})}
                         className="bg-background border border-border rounded-lg p-3 text-white w-full focus:ring-2 focus:ring-zinc-700 outline-none" 
-                        placeholder="Your Name"
+                        placeholder="e.g. Mikhail Gerges"
                     />
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs text-zinc-500">Headline</label>
+                    <label className="text-xs text-zinc-500">Job Position (Headline)</label>
                     <input 
                         value={profile.headline || ''} 
                         onChange={e => setProfile({...profile, headline: e.target.value})}
@@ -398,7 +398,7 @@ const ProfileManager = () => {
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs text-zinc-500">Bio</label>
+                    <label className="text-xs text-zinc-500">Description (Bio)</label>
                     <textarea 
                         rows={4}
                         value={profile.bio || ''} 

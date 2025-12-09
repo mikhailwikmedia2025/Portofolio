@@ -87,7 +87,7 @@ export const Home = () => {
   };
 
   // Default Fallbacks
-  const heroName = profile?.full_name || 'Mikhail Gerges Mikhail';
+  const heroName = profile?.full_name || 'Mikhail Gerges';
   const heroHeadline = profile?.headline || 'Senior Graphic Designer';
   const heroBio = profile?.bio || 'Specializing in branding, visual identity, and digital products. I craft digital experiences that matter, blending minimalist aesthetics with functional precision.';
   const heroImage = profile?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80';
@@ -154,7 +154,7 @@ export const Home = () => {
                 <img 
                   src={heroImage}
                   alt={heroName} 
-                  className="relative z-10 w-full h-full object-cover rounded-3xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
+                  className="relative z-10 w-full h-full object-cover object-center rounded-3xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </motion.div>
             </div>
