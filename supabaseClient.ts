@@ -26,6 +26,28 @@ export const supabase = createClient(SUPABASE_URL || '', SUPABASE_ANON_KEY || ''
 // No mock fallbacks. All calls go directly to Supabase.
 
 export const api = {
+  storage: {
+    upload: async (bucket: 'projects' | 'products', file: File): Promise<string> => {
+      // 1. Sanitize filename and create a unique path
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // 2. Upload to Supabase
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 3. Get Public URL
+      const { data } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    }
+  },
   projects: {
     list: async (): Promise<Project[]> => {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
