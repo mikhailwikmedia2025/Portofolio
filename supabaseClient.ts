@@ -53,6 +53,8 @@ export const api = {
         // Fetch the first profile available (assuming single user portfolio)
         const { data, error } = await supabase.from('profiles').select('*').limit(1).single();
         if (error) {
+            // Suppress error if no rows found, just return null
+            if (error.code === 'PGRST116') return null;
             console.warn('Error fetching public profile:', error);
             return null;
         }
@@ -63,14 +65,15 @@ export const api = {
         if (!user) return null;
         
         const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        if (error) {
-             // If profile doesn't exist but user does (edge case), return partial
+        if (error || !data) {
+             // Return a partial object with the ID so we can upsert later
              return { id: user.id, email: user.email || '' };
         }
         return data;
     },
     update: async (id: string, updates: Partial<Profile>) => {
-        const { data, error } = await supabase.from('profiles').update(updates).eq('id', id).select().single();
+        // Use upsert instead of update to handle creation if it doesn't exist
+        const { data, error } = await supabase.from('profiles').upsert({ id, ...updates }).select().single();
         if (error) throw error;
         return data;
     }

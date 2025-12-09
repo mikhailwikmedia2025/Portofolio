@@ -14,6 +14,27 @@ const SectionHeading = ({ children, subtitle }: { children: React.ReactNode; sub
   </div>
 );
 
+const HeroSkeleton = () => (
+  <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 max-w-7xl mx-auto animate-pulse">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div className="order-2 md:order-1 space-y-4">
+        <div className="h-12 md:h-16 bg-zinc-800 rounded-lg w-3/4"></div>
+        <div className="h-8 md:h-10 bg-zinc-800 rounded-lg w-1/2"></div>
+        <div className="h-4 bg-zinc-800 rounded w-full mt-6"></div>
+        <div className="h-4 bg-zinc-800 rounded w-5/6"></div>
+        <div className="h-4 bg-zinc-800 rounded w-4/6"></div>
+        <div className="flex gap-4 mt-8">
+          <div className="h-12 w-32 bg-zinc-800 rounded-full"></div>
+          <div className="h-12 w-32 bg-zinc-800 rounded-full"></div>
+        </div>
+      </div>
+      <div className="order-1 md:order-2 flex justify-center md:justify-end">
+        <div className="w-72 h-72 md:w-96 md:h-96 bg-zinc-800 rounded-3xl"></div>
+      </div>
+    </div>
+  </section>
+);
+
 export const Home = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -76,67 +97,71 @@ export const Home = () => {
       <Navbar />
 
       {/* HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          
-          {/* Text Content */}
-          <div className="order-2 md:order-1">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4"
-            >
-              <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-2">
-                {heroName}
-              </h1>
-              <h2 className="text-2xl md:text-3xl text-zinc-400 font-medium">
-                {heroHeadline}
-              </h2>
-            </motion.div>
+      {loading ? (
+        <HeroSkeleton />
+      ) : (
+        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-lg text-zinc-400 mb-8 max-w-lg leading-relaxed"
-            >
-              {heroBio}
-            </motion.p>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Button size="lg" className="rounded-full" onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth'})}>
-                View Work
-              </Button>
-              <Button variant="outline" size="lg" className="rounded-full" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth'})}>
-                Contact Me
-              </Button>
-            </motion.div>
-          </div>
+            {/* Text Content */}
+            <div className="order-2 md:order-1">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4"
+              >
+                <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-2">
+                  {heroName}
+                </h1>
+                <h2 className="text-2xl md:text-3xl text-zinc-400 font-medium">
+                  {heroHeadline}
+                </h2>
+              </motion.div>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-lg text-zinc-400 mb-8 max-w-lg leading-relaxed whitespace-pre-line"
+              >
+                {heroBio}
+              </motion.p>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="flex flex-wrap gap-4"
+              >
+                <Button size="lg" className="rounded-full" onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth'})}>
+                  View Work
+                </Button>
+                <Button variant="outline" size="lg" className="rounded-full" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth'})}>
+                  Contact Me
+                </Button>
+              </motion.div>
+            </div>
 
-          {/* Profile Image */}
-          <div className="order-1 md:order-2 flex justify-center md:justify-end">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="relative w-72 h-72 md:w-96 md:h-96"
-            >
-              <div className="absolute inset-0 bg-gradient-to-tr from-accent to-purple-500 rounded-3xl blur-2xl opacity-20" />
-              <img 
-                src={heroImage}
-                alt={heroName} 
-                className="relative z-10 w-full h-full object-cover rounded-3xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
-              />
-            </motion.div>
-          </div>
+            {/* Profile Image */}
+            <div className="order-1 md:order-2 flex justify-center md:justify-end">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className="relative w-72 h-72 md:w-96 md:h-96"
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-accent to-purple-500 rounded-3xl blur-2xl opacity-20" />
+                <img 
+                  src={heroImage}
+                  alt={heroName} 
+                  className="relative z-10 w-full h-full object-cover rounded-3xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
+                />
+              </motion.div>
+            </div>
 
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* PORTFOLIO GRID */}
       <section id="work" className="py-20 px-4 max-w-7xl mx-auto border-t border-white/5">
@@ -148,6 +173,7 @@ export const Home = () => {
            </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+            {projects.length === 0 && <p className="text-zinc-500">No projects added yet.</p>}
             {projects.map((project, idx) => (
               <motion.div
                 key={project.id}
@@ -213,6 +239,7 @@ export const Home = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.length === 0 && <p className="text-zinc-500 col-span-full">No products available yet.</p>}
           {products.map((product) => (
             <div key={product.id} className="bg-surface border border-border rounded-xl p-4 hover:border-zinc-700 transition-colors">
               <div className="aspect-square bg-zinc-800 rounded-lg mb-4 overflow-hidden relative group">
