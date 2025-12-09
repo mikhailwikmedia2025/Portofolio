@@ -4,7 +4,7 @@ import { ArrowRight, Download, ExternalLink, Mail, ArrowUpRight, CheckCircle2 } 
 import { Navbar } from '../components/Navbar';
 import { Button } from '../components/ui/Button';
 import { api } from '../supabaseClient';
-import { Project, Product } from '../types';
+import { Project, Product, Profile } from '../types';
 
 // Components inside Home to share state easily without prop drilling hell in this small app
 const SectionHeading = ({ children, subtitle }: { children: React.ReactNode; subtitle?: string }) => (
@@ -17,6 +17,7 @@ const SectionHeading = ({ children, subtitle }: { children: React.ReactNode; sub
 export const Home = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Contact Form State
@@ -27,12 +28,14 @@ export const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projData, prodData] = await Promise.all([
+        const [projData, prodData, profileData] = await Promise.all([
           api.projects.list(),
-          api.products.list()
+          api.products.list(),
+          api.profiles.getPublic()
         ]);
         setProjects(projData);
         setProducts(prodData);
+        setProfile(profileData);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -62,6 +65,12 @@ export const Home = () => {
     }
   };
 
+  // Default Fallbacks
+  const heroName = profile?.full_name || 'Mikhail Gerges Mikhail';
+  const heroHeadline = profile?.headline || 'Senior Graphic Designer';
+  const heroBio = profile?.bio || 'Specializing in branding, visual identity, and digital products. I craft digital experiences that matter, blending minimalist aesthetics with functional precision.';
+  const heroImage = profile?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80';
+
   return (
     <div className="min-h-screen bg-background text-zinc-300 font-sans selection:bg-accent/30 selection:text-accent-100">
       <Navbar />
@@ -78,10 +87,10 @@ export const Home = () => {
               className="mb-4"
             >
               <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-2">
-                Mikhail Gerges Mikhail
+                {heroName}
               </h1>
               <h2 className="text-2xl md:text-3xl text-zinc-400 font-medium">
-                Senior Graphic Designer
+                {heroHeadline}
               </h2>
             </motion.div>
             
@@ -91,8 +100,7 @@ export const Home = () => {
               transition={{ delay: 0.1 }}
               className="text-lg text-zinc-400 mb-8 max-w-lg leading-relaxed"
             >
-              Specializing in branding, visual identity, and digital products. 
-              I craft digital experiences that matter, blending minimalist aesthetics with functional precision.
+              {heroBio}
             </motion.p>
             
             <motion.div 
@@ -120,8 +128,8 @@ export const Home = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-accent to-purple-500 rounded-3xl blur-2xl opacity-20" />
               <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80" 
-                alt="Mikhail Gerges Mikhail" 
+                src={heroImage}
+                alt={heroName} 
                 className="relative z-10 w-full h-full object-cover rounded-3xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
               />
             </motion.div>
@@ -305,7 +313,7 @@ export const Home = () => {
       </section>
 
       <footer className="py-8 border-t border-border bg-background text-center text-sm text-zinc-600">
-        <p>&copy; {new Date().getFullYear()} Mikhail Portfolio. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} {heroName}. All rights reserved.</p>
       </footer>
     </div>
   );

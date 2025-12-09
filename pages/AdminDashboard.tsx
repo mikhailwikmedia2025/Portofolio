@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, MessageSquare, LogOut, Plus, Trash2, Edit2, ShoppingBag, Upload, Loader2, ImageIcon } from 'lucide-react';
+import { LayoutDashboard, Package, MessageSquare, LogOut, Plus, Trash2, Edit2, ShoppingBag, Upload, Loader2, ImageIcon, User } from 'lucide-react';
 import { api } from '../supabaseClient';
-import { Project, Product, ServiceInquiry } from '../types';
+import { Project, Product, ServiceInquiry, Profile } from '../types';
 import { Button } from '../components/ui/Button';
 
 // --- HELPER COMPONENT FOR IMAGE UPLOAD ---
@@ -11,13 +11,15 @@ const ImageUpload = ({
   value, 
   onChange, 
   onUploadStart, 
-  onUploadEnd 
+  onUploadEnd,
+  label = "Cover Image"
 }: { 
-  bucket: 'projects' | 'products';
+  bucket: 'projects' | 'products' | 'avatars';
   value: string;
   onChange: (url: string) => void;
   onUploadStart: () => void;
   onUploadEnd: () => void;
+  label?: string;
 }) => {
   const [uploading, setUploading] = useState(false);
 
@@ -41,7 +43,7 @@ const ImageUpload = ({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-zinc-400">Cover Image</label>
+      <label className="text-sm font-medium text-zinc-400">{label}</label>
       <label className="block w-full cursor-pointer bg-background border border-dashed border-zinc-700 rounded-lg p-6 text-center hover:bg-zinc-800/50 transition-all group">
         <input 
           type="file" 
@@ -317,10 +319,107 @@ const InquiriesManager = () => {
     )
 }
 
+// --- PROFILE MANAGER ---
+const ProfileManager = () => {
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        loadProfile();
+    }, []);
+
+    const loadProfile = async () => {
+        setLoading(true);
+        const data = await api.profiles.getMine();
+        if (data) setProfile(data);
+        setLoading(false);
+    };
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!profile) return;
+        setLoading(true);
+        try {
+            await api.profiles.update(profile.id, {
+                full_name: profile.full_name,
+                headline: profile.headline,
+                bio: profile.bio,
+                avatar_url: profile.avatar_url
+            });
+            setMessage('Profile updated successfully!');
+            setTimeout(() => setMessage(''), 3000);
+        } catch (error) {
+            console.error(error);
+            setMessage('Error updating profile.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!profile) return <div className="p-4 text-zinc-500">Loading profile...</div>;
+
+    return (
+        <div className="max-w-xl">
+             <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-white">Edit Profile</h2>
+                {message && <span className={`text-xs px-2 py-1 rounded ${message.includes('Error') ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>{message}</span>}
+            </div>
+
+            <form onSubmit={handleSave} className="space-y-6 bg-surface p-6 rounded-xl border border-border">
+                <ImageUpload 
+                    bucket="avatars"
+                    label="Profile Picture"
+                    value={profile.avatar_url || ''}
+                    onChange={(url) => setProfile({...profile, avatar_url: url})}
+                    onUploadStart={() => setIsUploading(true)}
+                    onUploadEnd={() => setIsUploading(false)}
+                />
+
+                <div className="space-y-1">
+                    <label className="text-xs text-zinc-500">Display Name</label>
+                    <input 
+                        value={profile.full_name || ''} 
+                        onChange={e => setProfile({...profile, full_name: e.target.value})}
+                        className="bg-background border border-border rounded-lg p-3 text-white w-full focus:ring-2 focus:ring-zinc-700 outline-none" 
+                        placeholder="Your Name"
+                    />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs text-zinc-500">Headline</label>
+                    <input 
+                        value={profile.headline || ''} 
+                        onChange={e => setProfile({...profile, headline: e.target.value})}
+                        className="bg-background border border-border rounded-lg p-3 text-white w-full focus:ring-2 focus:ring-zinc-700 outline-none" 
+                        placeholder="e.g. Senior Graphic Designer"
+                    />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs text-zinc-500">Bio</label>
+                    <textarea 
+                        rows={4}
+                        value={profile.bio || ''} 
+                        onChange={e => setProfile({...profile, bio: e.target.value})}
+                        className="bg-background border border-border rounded-lg p-3 text-white w-full focus:ring-2 focus:ring-zinc-700 outline-none" 
+                        placeholder="Tell the world about yourself..."
+                    />
+                </div>
+
+                <Button type="submit" isLoading={loading || isUploading} disabled={loading || isUploading} className="w-full">
+                    Save Changes
+                </Button>
+            </form>
+        </div>
+    );
+}
+
 // MAIN DASHBOARD COMPONENT
 
 export const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'projects' | 'products' | 'inquiries'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'products' | 'inquiries' | 'profile'>('projects');
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
 
@@ -369,6 +468,12 @@ export const AdminDashboard = () => {
             >
                 <MessageSquare size={18} /> Inquiries
             </button>
+            <button 
+                onClick={() => setActiveTab('profile')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'profile' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'}`}
+            >
+                <User size={18} /> Profile
+            </button>
         </nav>
         <div className="p-4 border-t border-border">
             <div className="mb-4 text-xs text-zinc-500 truncate px-2">{user.email}</div>
@@ -387,7 +492,7 @@ export const AdminDashboard = () => {
         
         {/* Mobile Tabs */}
         <div className="md:hidden flex space-x-2 mb-8 overflow-x-auto pb-2">
-            {['projects', 'products', 'inquiries'].map((t) => (
+            {['projects', 'products', 'inquiries', 'profile'].map((t) => (
                 <button 
                     key={t}
                     onClick={() => setActiveTab(t as any)}
@@ -402,6 +507,7 @@ export const AdminDashboard = () => {
             {activeTab === 'projects' && <ProjectsManager />}
             {activeTab === 'products' && <ProductsManager />}
             {activeTab === 'inquiries' && <InquiriesManager />}
+            {activeTab === 'profile' && <ProfileManager />}
         </div>
       </main>
     </div>

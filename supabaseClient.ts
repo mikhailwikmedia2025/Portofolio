@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Project, Product, ServiceInquiry } from './types';
+import { Project, Product, ServiceInquiry, Profile } from './types';
 
 // Strictly use import.meta.env.VITE_...
 // We use @ts-ignore to avoid TypeScript errors if types aren't perfect, 
@@ -27,7 +27,7 @@ export const supabase = createClient(SUPABASE_URL || '', SUPABASE_ANON_KEY || ''
 
 export const api = {
   storage: {
-    upload: async (bucket: 'projects' | 'products', file: File): Promise<string> => {
+    upload: async (bucket: 'projects' | 'products' | 'avatars', file: File): Promise<string> => {
       // 1. Sanitize filename and create a unique path
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
@@ -46,6 +46,33 @@ export const api = {
         .getPublicUrl(filePath);
 
       return data.publicUrl;
+    }
+  },
+  profiles: {
+    getPublic: async (): Promise<Profile | null> => {
+        // Fetch the first profile available (assuming single user portfolio)
+        const { data, error } = await supabase.from('profiles').select('*').limit(1).single();
+        if (error) {
+            console.warn('Error fetching public profile:', error);
+            return null;
+        }
+        return data;
+    },
+    getMine: async (): Promise<Profile | null> => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+        
+        const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+        if (error) {
+             // If profile doesn't exist but user does (edge case), return partial
+             return { id: user.id, email: user.email || '' };
+        }
+        return data;
+    },
+    update: async (id: string, updates: Partial<Profile>) => {
+        const { data, error } = await supabase.from('profiles').update(updates).eq('id', id).select().single();
+        if (error) throw error;
+        return data;
     }
   },
   projects: {

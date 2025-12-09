@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string;
   title: string;
@@ -30,6 +31,8 @@ export interface Profile {
   id: string;
   email: string;
   full_name?: string;
+  headline?: string;
+  bio?: string;
   avatar_url?: string;
 }
 
