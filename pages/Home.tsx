@@ -29,7 +29,7 @@ const HeroSkeleton = () => (
         </div>
       </div>
       <div className="order-1 md:order-2 flex justify-center md:justify-end">
-        <div className="w-72 h-72 md:w-96 md:h-96 bg-zinc-800 rounded-3xl"></div>
+        <div className="w-72 md:w-80 aspect-[3/4] bg-zinc-800 rounded-2xl"></div>
       </div>
     </div>
   </section>
@@ -148,13 +148,13 @@ export const Home = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="relative w-72 h-72 md:w-96 md:h-96"
+                className="relative w-72 md:w-80 aspect-[3/4]"
               >
-                <div className="absolute inset-0 bg-gradient-to-tr from-accent to-purple-500 rounded-3xl blur-2xl opacity-20" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-accent to-purple-500 rounded-2xl blur-2xl opacity-20" />
                 <img 
                   src={heroImage}
                   alt={heroName} 
-                  className="relative z-10 w-full h-full object-cover object-center rounded-3xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
+                  className="relative z-10 w-full h-full object-cover object-top rounded-2xl border border-zinc-700 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </motion.div>
             </div>
